@@ -3,8 +3,20 @@ import cv2
 import numpy as np
 import os
 from datetime import datetime
+import serial
+import time
 
-path = 'ImagesAttendance'
+
+arduino = serial.Serial(
+        port='COM3', #Replace ttyS0 with ttyAM0 for Pi1,Pi2,Pi0
+        baudrate = 9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=1
+)
+
+path = 'imagesAttendance'
 images = []
 className = []
 myList = os.listdir(path)
@@ -59,6 +71,9 @@ while True:
         if faceDis[matchIndex] < 0.50:
             name = className[matchIndex].upper()
             markAttendance(name)
+            time.sleep(0.5)
+            arduino.write(str.encode('a'))
+            time.sleep(5)
         else:
             name = 'Unknown/NO voter ID'
 
